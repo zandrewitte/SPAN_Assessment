@@ -26,7 +26,6 @@ object ScoringFunctions {
 
   def printScoreLog(scoredRanks: List[(Int, List[TeamRank])]): Unit = scoredRanks.foldLeft(1){
     case (ranking, (score, scoreTeamRanks)) =>
-      println(scoreTeamRanks)
       scoreTeamRanks.sortBy(_.name).foreach(teamRank =>
         println(s"${Console.BOLD}$ranking. ${teamRank.name}: ${teamRank.score}${if(teamRank.score == 1)"pt" else "pts"}${Console.RESET}")
       )
