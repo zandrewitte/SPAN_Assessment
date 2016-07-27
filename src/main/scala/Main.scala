@@ -23,8 +23,8 @@ object Main extends App{
     FileIO.fromPath(file)
       .via(Framing.delimiter(ByteString(System.lineSeparator), maximumFrameLength = 512, allowTruncation = true))
       .map{_ |> byteStringToGame |> getGameResult }
-      .fold(List[TeamRank]())(_ ::: _)
-      .runWith(StreamSink.foreach{_ |> groupRanks |> groupScores |> printScoreLog })
+      .fold(Map[String, Int]())(_ |+| _)
+      .runWith(StreamSink.foreach{_ |> groupScores |> printScoreLog })
   }
 
 }

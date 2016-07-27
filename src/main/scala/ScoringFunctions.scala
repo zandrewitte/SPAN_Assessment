@@ -15,21 +15,18 @@ object ScoringFunctions {
     Game(TeamResult(team1Name.trim, team1Score.toInt), TeamResult(team2Name.trim, team2Score.toInt))
   }
 
-  def getGameResult(game: Game): List[TeamRank] = game.team1.goals.compareTo(game.team2.goals) match {
-    case t if t < 0 => List(TeamRank(game.team1.teamName, LOSE_SCORE), TeamRank(game.team2.teamName, WIN_SCORE))
-    case t if t == 0 => List(TeamRank(game.team1.teamName, DRAW_SCORE), TeamRank(game.team2.teamName, DRAW_SCORE))
-    case t if t > 0 => List(TeamRank(game.team1.teamName, WIN_SCORE), TeamRank(game.team2.teamName, LOSE_SCORE))
+  def getGameResult(game: Game): Map[String, Int] = game.team1.goals.compareTo(game.team2.goals) match {
+    case t if t < 0 => Map(game.team1.teamName -> LOSE_SCORE, game.team2.teamName -> WIN_SCORE)
+    case t if t == 0 => Map(game.team1.teamName -> DRAW_SCORE, game.team2.teamName -> DRAW_SCORE)
+    case t if t > 0 => Map(game.team1.teamName -> WIN_SCORE, game.team2.teamName -> LOSE_SCORE)
   }
 
-  def groupRanks(teamRanks: List[TeamRank]): List[TeamRank] = teamRanks.groupBy(_.name).map{
-    case (teamName, teamScores) => TeamRank(teamName, teamScores.map(_.score).sum)
-  }.toList
-
-  def groupScores(teamRanks: List[TeamRank]): List[(Int, List[TeamRank])] = teamRanks.groupBy(_.score).toList
-    .sortBy(_._1)(scala.Ordering.Int.reverse)
+  def groupScores(teamRanks: Map[String, Int]): List[(Int, List[TeamRank])] = teamRanks.map{case (k, v) => TeamRank(k, v)}.toList
+    .groupBy(_.score).toList.sortBy(_._1)(scala.Ordering.Int.reverse)
 
   def printScoreLog(scoredRanks: List[(Int, List[TeamRank])]): Unit = scoredRanks.foldLeft(1){
     case (ranking, (score, scoreTeamRanks)) =>
+      println(scoreTeamRanks)
       scoreTeamRanks.sortBy(_.name).foreach(teamRank =>
         println(s"${Console.BOLD}$ranking. ${teamRank.name}: ${teamRank.score}${if(teamRank.score == 1)"pt" else "pts"}${Console.RESET}")
       )
